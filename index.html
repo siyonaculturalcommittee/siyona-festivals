@@ -27,6 +27,7 @@
       border-radius: 12px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.2);
       width: 500px;
+      position: relative; /* for positioning logout button */
     }
     h2 { color: #b22222; margin-bottom: 15px; }
     input {
@@ -50,10 +51,28 @@
     select:disabled, button:disabled {
       background: #eee; color: #999; cursor: not-allowed;
     }
+
+    /* Logout button style */
+    #logoutBtn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #b22222;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #logoutBtn:hover { background: #8b0000; }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Logout button -->
+    <button id="logoutBtn">Logout</button>
+
     <h2>🎉 Dusshera Prasad Admin Portal 🎉</h2>
     <p style="color:#d2691e;">Search by Flat Number or Token</p>
     <input type="text" id="searchQuery" placeholder="Enter Flat Number or Token">
@@ -68,12 +87,19 @@
     if (localStorage.getItem("isLoggedIn") !== "true") {
       window.location.href = "login.html";
     }
+
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
     const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM";
 
     const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "login.html";
+    });
 
     // Expose functions globally so inline onclick works
     window.search = async function () {
