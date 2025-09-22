@@ -1,1 +1,130 @@
-PLACEHOLDER: index.html content
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dusshera Prasad Admin Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ff9933, #ffe066, #ffffff, #66ccff, #138808);
+      background-size: 400% 400%;
+      animation: festiveBG 15s ease infinite;
+    }
+    @keyframes festiveBG {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      width: 500px;
+    }
+    h2 { color: #b22222; margin-bottom: 15px; }
+    input {
+      margin: 8px; padding: 10px; width: 80%;
+      border: 2px solid #ff9933; border-radius: 8px; font-size: 14px;
+    }
+    button {
+      padding: 10px 18px; margin: 8px; background: #ff9933;
+      border: none; color: white; border-radius: 8px; cursor: pointer; font-size: 15px;
+      transition: background 0.3s;
+    }
+    button:hover { background: #e68a00; }
+    .card {
+      border: 2px solid #ffcc66; background: #fffaf0;
+      padding: 15px; margin-top: 15px; border-radius: 10px;
+      text-align: center;
+    }
+    .card p { margin: 6px 0; font-size: 14px; }
+    .card p b { color: #b22222; }
+    .warning { color: red; font-weight: bold; margin-top: 10px; }
+    select:disabled, button:disabled {
+      background: #eee; color: #999; cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎉 Dusshera Prasad Admin Portal 🎉</h2>
+    <p style="color:#d2691e;">Search by Flat Number or Token</p>
+    <input type="text" id="searchQuery" placeholder="Enter Flat Number or Token">
+    <br>
+    <button onclick="search()">Search</button>
+    <div id="results"></div>
+  </div>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    // Replace with your Supabase details
+    const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function search() {
+      const query = document.getElementById("searchQuery").value.trim();
+      if (!query) { alert("Enter Flat Number or Token"); return; }
+      let { data, error } = await supabase
+        .from("prasad")
+        .select("*")
+        .or(`flat_number.eq.${query},token.eq.${query}`);
+      if (error) { alert("Error: " + error.message); return; }
+      renderResults(data);
+    }
+
+    function renderResults(results) {
+      const div = document.getElementById("results");
+      div.innerHTML = "";
+      if (!results || results.length === 0) {
+        div.innerHTML = "<p style='color:#b22222;'>❌ No matching entry found.</p>";
+        return;
+      }
+      results.forEach(r => {
+        let warningMessage = "";
+        let disabled = "";
+        if (r.packet_received === "Yes") {
+          warningMessage = "<p class='warning'>⚠️ Packet is already received</p>";
+          disabled = "disabled";
+        }
+        const html = `
+          <div class="card">
+            <p><b>Flat:</b> ${r.flat_number}</p>
+            <p><b>Token:</b> ${r.token}</p>
+            <p><b>Family Count:</b> ${r.family_count}</p>
+            <p><b>Email:</b> ${r.email}</p>
+            <p><b>Packet Received:</b> ${r.packet_received}</p>
+            ${warningMessage}
+            <label>
+              <select id="status-${r.id}" ${disabled}>
+                <option value="Yes" ${r.packet_received==="Yes"?"selected":""}>Yes</option>
+                <option value="No" ${r.packet_received==="No"?"selected":""}>No</option>
+              </select>
+            </label>
+            <br><br>
+            <button onclick="updateStatus(${r.id})" ${disabled}>Submit</button>
+          </div>`;
+        div.innerHTML += html;
+      });
+    }
+
+    async function updateStatus(id) {
+      const status = document.getElementById("status-" + id).value;
+      let { error } = await supabase
+        .from("prasad")
+        .update({ packet_received: status })
+        .eq("id", id);
+      if (error) alert("Error: " + error.message);
+      else alert("Updated successfully!");
+    }
+  </script>
+</body>
+</html>
