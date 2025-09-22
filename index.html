@@ -63,21 +63,28 @@
   </div>
 
   <!-- Supabase client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // Replace with your Supabase details
     const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ✅ Create supabase client instance
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function search() {
       const query = document.getElementById("searchQuery").value.trim();
       if (!query) { alert("Enter Flat Number or Token"); return; }
-      let { data, error } = await supabase
+
+      let { data, error } = await client
         .from("prasad")
         .select("*")
         .or(`flat_number.eq.${query},token.eq.${query}`);
-      if (error) { alert("Error: " + error.message); return; }
+
+      if (error) { 
+        alert("Error: " + error.message); 
+        return; 
+      }
       renderResults(data);
     }
 
@@ -118,10 +125,11 @@
 
     async function updateStatus(id) {
       const status = document.getElementById("status-" + id).value;
-      let { error } = await supabase
+      let { error } = await client
         .from("prasad")
         .update({ packet_received: status })
         .eq("id", id);
+
       if (error) alert("Error: " + error.message);
       else alert("Updated successfully!");
     }
