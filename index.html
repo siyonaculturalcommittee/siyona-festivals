@@ -65,12 +65,12 @@
   <!-- Supabase client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Replace with your Supabase details
+    const { createClient } = window.supabase;  // ✅ get createClient from global
+
     const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM";
 
-    // ✅ Create supabase client instance
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const client = createClient(SUPABASE_URL, SUPABASE_KEY); // ✅ no more supabase shadowing
 
     async function search() {
       const query = document.getElementById("searchQuery").value.trim();
