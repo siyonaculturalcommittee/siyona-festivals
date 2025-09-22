@@ -64,6 +64,10 @@
 
   <!-- Supabase ESM client -->
   <script type="module">
+    // redirect if not logged in
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
     const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
