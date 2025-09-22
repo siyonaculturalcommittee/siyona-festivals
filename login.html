@@ -6,28 +6,80 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex; justify-content: center; align-items: center;
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
       height: 100vh;
       background: linear-gradient(135deg, #ff9933, #ffe066, #ffffff, #66ccff, #138808);
-      background-size: 400% 400%; animation: festiveBG 15s ease infinite;
+      background-size: 400% 400%; 
+      animation: festiveBG 15s ease infinite;
+      margin: 0;
     }
+
     @keyframes festiveBG {
       0%{background-position:0% 50%}
       50%{background-position:100% 50%}
       100%{background-position:0% 50%}
     }
+
     .login-box {
-      background: white; padding: 30px; border-radius: 12px;
+      background: white; 
+      padding: 30px; 
+      border-radius: 12px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-      text-align: center; width: 300px;
+      text-align: center; 
+      width: 300px;
+
+      /* Flexbox to vertically center inputs */
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      height: 320px; /* adjust as needed */
     }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
     input, button {
-      width: 100%; padding: 10px; margin: 8px 0; border-radius: 8px;
-      border: 2px solid #ff9933; font-size: 14px;
+      width: 100%; 
+      padding: 10px; 
+      margin: 8px 0; 
+      border-radius: 8px;
+      border: 2px solid #ff9933; 
+      font-size: 14px;
+      box-sizing: border-box;
     }
-    button { background: #ff9933; color: white; cursor: pointer; border: none; }
-    button:hover { background: #e68a00; }
-    #msg { color:red; margin-top:10px; }
+
+    button { 
+      background: #ff9933; 
+      color: white; 
+      cursor: pointer; 
+      border: none; 
+    }
+
+    button:hover { 
+      background: #e68a00; 
+    }
+
+    #msg { 
+      color: red; 
+      margin-top: 10px; 
+      font-size: 13px;
+    }
+
+    /* Optional shake animation for wrong credentials */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
   </style>
 </head>
 <body>
@@ -56,13 +108,9 @@
       } else {
         msg.innerText = "❌ Invalid username or password";
         loginBox.classList.add("shake");
-    
-        // remove shake effect after animation completes
         setTimeout(() => {
           loginBox.classList.remove("shake");
         }, 300);
-    
-        // optional: clear password field
         document.getElementById("password").value = "";
       }
     }
