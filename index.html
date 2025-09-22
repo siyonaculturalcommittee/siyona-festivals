@@ -14,11 +14,11 @@
       padding-top: 60px; /* leave space for fixed logout button */
       display: flex;
       justify-content: center;
-      /* GitHub image as background */
+      /* Set GitHub image as background */
       background-image: url('https://raw.githubusercontent.com/siyonaculturalcommittee/siyona-festivals/main/login-image.jpg');
-      background-size: cover;         
-      background-position: center;    
-      background-repeat: no-repeat;   
+      background-size: cover; /* Cover entire screen */
+      background-position: center; /* Center the image */
+      background-repeat: no-repeat; /* Prevent tiling */
     }
     @keyframes festiveBG {
       0%{background-position:0% 50%}
@@ -58,28 +58,6 @@
       z-index: 9999;
     }
     #logoutBtn:hover { background: #8b0000; }
-
-    /* Summary table */
-    #summary {
-      margin-top: 20px;
-      border: 2px solid #ff9933;
-      border-radius: 10px;
-      padding: 15px;
-      background: #f9f9f9;
-    }
-    #summary h3 { margin-bottom: 10px; color: #b22222; }
-    #summary table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    #summary th, #summary td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-    #summary th {
-      background: #ffcc66;
-    }
   </style>
 </head>
 <body>
@@ -93,25 +71,6 @@
     <br>
     <button onclick="search()">Search</button>
     <div id="results"></div>
-
-    <!-- Packet Summary -->
-    <div id="summary">
-      <h3>📊 Packet Summary</h3>
-      <table>
-        <tr>
-          <th>Total Entries</th>
-          <th>Packets Received</th>
-          <th>Pending</th>
-          <th>Total Family Count</th>
-        </tr>
-        <tr>
-          <td id="totalEntries">0</td>
-          <td id="packetsReceived">0</td>
-          <td id="pending">0</td>
-          <td id="familyCount">0</td>
-        </tr>
-      </table>
-    </div>
   </div>
 
   <script type="module">
@@ -123,7 +82,7 @@
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
     const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM"; // replace with secure env key
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM";
 
     const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -132,27 +91,6 @@
       localStorage.removeItem("isLoggedIn");
       window.location.href = "login.html";
     });
-
-    // Fetch and update summary
-    async function loadSummary() {
-      const { data, error } = await client.from("prasad").select("*");
-      if (error) {
-        console.error("Summary error:", error);
-        return;
-      }
-      const total = data.length;
-      const received = data.filter(r => r.packet_received === "Yes").length;
-      const pending = data.filter(r => r.packet_received === "No").length;
-      const familyCount = data.reduce((sum, r) => sum + (r.family_count || 0), 0);
-
-      document.getElementById("totalEntries").innerText = total;
-      document.getElementById("packetsReceived").innerText = received;
-      document.getElementById("pending").innerText = pending;
-      document.getElementById("familyCount").innerText = familyCount;
-    }
-
-    // Run summary on load
-    loadSummary();
 
     window.search = async function () {
       const query = document.getElementById("searchQuery").value.trim();
@@ -165,7 +103,6 @@
 
       if (error) { alert("Error: " + error.message); return; }
       renderResults(data);
-      loadSummary(); // refresh summary after search
     };
 
     function renderResults(results) {
@@ -211,10 +148,7 @@
         .eq("id", id);
 
       if (error) alert("Error: " + error.message);
-      else {
-        alert("Updated successfully!");
-        loadSummary(); // refresh summary after update
-      }
+      else alert("Updated successfully!");
     };
   </script>
 </body>
