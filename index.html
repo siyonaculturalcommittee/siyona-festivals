@@ -27,11 +27,18 @@
     }
     .container {
       text-align: center;
-      background: white;
-      padding: 30px;
+      background: white; 
+      padding: 30px; 
       border-radius: 12px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-      width: 500px;
+      text-align: center; 
+      width: 300px;
+
+      /* Flexbox to vertically center inputs */
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      height: 320px; /* adjust as needed */
     }
     h2 { color: #b22222; margin-bottom: 15px; }
     input { margin: 8px; padding: 10px; width: 80%; border: 2px solid #ff9933; border-radius: 8px; font-size: 14px; }
