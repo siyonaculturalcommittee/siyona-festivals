@@ -47,4 +47,167 @@
     margin-bottom: 15px; 
   }
 
-  input
+  input { 
+    margin: 8px; 
+    padding: 10px; 
+    width: 80%; 
+    border: 2px solid #ff9933; 
+    border-radius: 8px; 
+    font-size: 14px; 
+  }
+
+  button { 
+    padding: 10px 18px; 
+    margin: 8px; 
+    background: #ff9933; 
+    border: none; 
+    color: white; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 15px; 
+    transition: background 0.3s; 
+  }
+  button:hover { background: #e68a00; }
+
+  .card {
+    border: 2px solid #ffcc66; 
+    background: #fffaf0; 
+    padding: 15px; 
+    margin-top: 20px; 
+    border-radius: 10px; 
+    text-align: left; 
+    width: 100%; 
+    max-width: 420px;
+
+    /* Collapsible animation */
+    max-height: 0; 
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+  }
+
+  .card.show {
+    max-height: 500px; /* allow expansion */
+    opacity: 1;
+  }
+
+  .card p { 
+    margin: 6px 0; 
+    font-size: 14px; 
+    line-height: 1.4; 
+  }
+  .card p b { color: #b22222; }
+
+  .warning { 
+    color: red; 
+    font-weight: bold; 
+    margin-top: 10px; 
+  }
+
+  select:disabled, button:disabled { 
+    background: #eee; 
+    color: #999; 
+    cursor: not-allowed; 
+  }
+
+  /* Logout button fixed top-right */
+  #logoutBtn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: #b22222;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    z-index: 9999;
+  }
+  #logoutBtn:hover { background: #8b0000; }
+</style>
+</head>
+<body>
+  <!-- Logout button -->
+  <button id="logoutBtn">Logout</button>
+
+  <div class="container">
+    <h2>🎉 Dusshera Prasad Admin Portal 🎉</h2>
+    <p style="color:#d2691e;">Search by Flat Number or Token</p>
+    <input type="text" id="searchQuery" placeholder="Enter Flat Number or Token">
+    <br>
+    <button id="searchBtn">Search</button>
+    <div id="results"></div>
+  </div>
+
+  <script type="module">
+    // Redirect if not logged in
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co"
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM";
+
+    const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "login.html";
+    });
+
+    // Attach search button click handler
+    document.getElementById("searchBtn").addEventListener("click", search);
+
+    async function search() {
+      const query = document.getElementById("searchQuery").value.trim();
+      if (!query) { alert("Enter Flat Number or Token"); return; }
+
+      const { data, error } = await client
+        .from("prasad")
+        .select("*")
+        .or(`flat_number.eq.${query},token.eq.${query}`);
+
+      if (error) { alert("Error: " + error.message); return; }
+      renderResults(data);
+    }
+
+    function renderResults(results) {
+      const div = document.getElementById("results");
+      div.innerHTML = "";
+
+      if (!results || results.length === 0) {
+        div.innerHTML = `
+          <div class="card show">
+            <p style="color:#b22222; font-weight:bold;">❌ No matching entry found.</p>
+          </div>`;
+        return;
+      }
+
+      results.forEach(r => {
+        let warningMessage = "";
+        let disabled = "";
+        if (r.packet_received === "Yes") {
+          warningMessage = "<p class='warning'>⚠️ Packet is already received</p>";
+          disabled = "disabled";
+        }
+
+        const html = `
+          <div class="card show">
+            <p><b>Flat:</b> ${r.flat_number}</p>
+            <p><b>Token:</b> ${r.token}</p>
+            <p><b>Family Count:</b> ${r.family_count}</p>
+            <p><b>Email:</b> ${r.email}</p>
+            <p><b>Packet Received:</b> ${r.packet_received}</p>
+            ${warningMessage}
+            <label>
+              <select id="status-${r.id}" ${disabled}>
+                <option value="Yes" ${r.packet_received==="Yes"?"selected":""}>Yes</option>
+                <option value="No" ${r.packet_received==="No"?"selected":""}>No</option>
+              </select>
+            </label>
+            <br><br>
+            <button class="updateBtn" data-id="${r.id}" ${d
