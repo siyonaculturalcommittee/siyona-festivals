@@ -206,6 +206,7 @@
           <p><b>Packet Received:</b> ${r.packet_received}</p>
           ${warningMessage}
           <label>
+            <p><b>Change Packet Delivery Status:</b></p>
             <select id="status-${r.id}" ${disabled}>
               <option value="Yes" ${r.packet_received==="Yes"?"selected":""}>Yes</option>
               <option value="No" ${r.packet_received==="No"?"selected":""}>No</option>
