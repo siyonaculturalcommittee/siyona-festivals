@@ -212,8 +212,9 @@
       results.forEach(r => {
         let warningMessage = "";
         let disabled = "";
-        if (r.packet_received === "Yes") {
-          warningMessage = "<p class='warning'>⚠️ Packet is already received</p>";
+        const role = localStorage.getItem("role");
+        if (r.packet_received === "Yes" && role !== "superadmin") {
+          warningMessage = "<p class='warning'>✅ Packets deliverd successfully!!!</p>";
           disabled = "disabled";
         }
         const card = document.createElement("div");
@@ -272,15 +273,25 @@ async function updateStatus(id) {
     if (warning) warning.remove();
 
     // disable dropdown + button if status is Yes
-    if (status === "Yes") {
+    const role = localStorage.getItem("role");
+
+    if (status === "Yes" && role !== "superadmin") {
+      // lock only for admin
       document.getElementById("status-" + id).setAttribute("disabled", "true");
       card.querySelector(".updateBtn").setAttribute("disabled", "true");
-
-      // show warning message
+    
       const warningMessage = document.createElement("p");
       warningMessage.className = "warning";
-      warningMessage.innerHTML = "✅ Packets deliverd successfully!!!";
-      card.insertBefore(warningMessage, card.querySelector("label"));
+      warningMessage.innerHTML = "✅ Packet delivered successfully!";
+      card.insertBefore(warningMessage, card.querySelector("p:nth-of-type(6)"));
+    } else {
+      // Superadmin: no lock, can toggle back
+      const warningMessage = document.createElement("p");
+      warningMessage.className = "warning";
+      warningMessage.innerHTML = status === "Yes"
+        ? "✅ Packet marked as delivered"
+        : "❌ Packet marked as not delivered";
+      card.insertBefore(warningMessage, card.querySelector("p:nth-of-type(6)"));
     }
   }
 }
