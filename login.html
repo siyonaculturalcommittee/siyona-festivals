@@ -109,9 +109,14 @@
       const msg = document.getElementById("msg");
       const loginBox = document.querySelector(".login-box");
     
-      if ((u === ADMIN_USER && p === ADMIN_PASS) || (u === SUPER_ADMIN && p === SUPER_PASS)) {
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
         localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("role", "admin");   // ✅ store role
         window.location.href = "index.html";
+      } else if (u === SUPER_ADMIN && p === SUPER_PASS) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("role", "superadmin");  // ✅ store role
+        window.location.href = "index.html";  // same portal but with extra permissions
       } else {
         msg.innerText = "❌ Invalid username or password";
         loginBox.classList.add("shake");
