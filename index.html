@@ -146,6 +146,18 @@
 
     const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Inactivity auto logout (15 minutes = 900000 ms)
+    let inactivityTimer;
+    
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        alert("You have been logged out due to inactivity.");
+        localStorage.removeItem("isLoggedIn");
+        window.location.href = "login.html";
+      }, 900000); // 15 minutes
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       // redirect if not logged in
       if (localStorage.getItem("isLoggedIn") !== "true") {
@@ -166,6 +178,14 @@
       document.getElementById("searchQuery").addEventListener("keypress", e => {
         if (e.key === "Enter") search();
       });
+
+      // track user activity (reset timer)
+        ["click", "mousemove", "keypress", "scroll", "touchstart"].forEach(event => {
+          document.addEventListener(event, resetInactivityTimer, true);
+        });
+      
+        // start inactivity timer when page loads
+        resetInactivityTimer();
     });
 
     async function search() {
@@ -206,7 +226,7 @@
           <p><b>Packet Received:</b> ${r.packet_received}</p>
           ${warningMessage}
           <label>
-            <p><b>Change Packet Delivery Status:</b></p>
+            <b>Change Packet Delivery Status:</b>
             <select id="status-${r.id}" ${disabled}>
               <option value="Yes" ${r.packet_received==="Yes"?"selected":""}>Yes</option>
               <option value="No" ${r.packet_received==="No"?"selected":""}>No</option>
