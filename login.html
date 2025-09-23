@@ -99,7 +99,9 @@
   <script>
     // hardcoded credentials (change these!)
     const ADMIN_USER = "admin";
+    const SUPER_ADMIN = "superadmin"
     const ADMIN_PASS = "SiyonaFest@2025";
+    const SUPER_PASS = "SiyonaSuper@2025";
 
     function login() {
       const u = document.getElementById("username").value.trim();
@@ -107,7 +109,7 @@
       const msg = document.getElementById("msg");
       const loginBox = document.querySelector(".login-box");
     
-      if (u === ADMIN_USER && p === ADMIN_PASS) {
+      if ((u === ADMIN_USER && p === ADMIN_PASS) || (u === SUPER_ADMIN && p === SUPER_PASS)) {
         localStorage.setItem("isLoggedIn", "true");
         window.location.href = "index.html";
       } else {
