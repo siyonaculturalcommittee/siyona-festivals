@@ -245,16 +245,45 @@
       });
     }
 
-    async function updateStatus(id) {
-      const status = document.getElementById("status-" + id).value;
-      const { error } = await client
-        .from("prasad")
-        .update({ packet_received: status })
-        .eq("id", id);
+async function updateStatus(id) {
+  const status = document.getElementById("status-" + id).value;
 
-      if (error) alert("Error: " + error.message);
-      else alert("Updated successfully!");
+  const { error } = await client
+    .from("prasad")
+    .update({ packet_received: status })
+    .eq("id", id);
+
+  if (error) {
+    alert("Error: " + error.message);
+  } else {
+    alert("Updated successfully!");
+
+    // update UI immediately
+    const card = document.querySelector(`#status-${id}`).closest(".card");
+
+    // update the "Packet Received" line
+    const packetLine = card.querySelector("p:nth-of-type(5)"); 
+    if (packetLine) {
+      packetLine.innerHTML = `<b>Packet Received:</b> ${status}`;
     }
+
+    // remove any old warning
+    const warning = card.querySelector(".warning");
+    if (warning) warning.remove();
+
+    // disable dropdown + button if status is Yes
+    if (status === "Yes") {
+      document.getElementById("status-" + id).setAttribute("disabled", "true");
+      card.querySelector(".updateBtn").setAttribute("disabled", "true");
+
+      // show warning message
+      const warningMessage = document.createElement("p");
+      warningMessage.className = "warning";
+      warningMessage.innerHTML = "✅ Packets deliverd successfully!!!";
+      card.insertBefore(warningMessage, card.querySelector("label"));
+    }
+  }
+}
   </script>
 </body>
 </html>
