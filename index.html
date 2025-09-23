@@ -226,11 +226,12 @@
           <p><b>Packet Received:</b> ${r.packet_received}</p>
           ${warningMessage}
           <label>
-            <b>Change Packet Delivery Status:</b>
+            <p><b>Change Packet Delivery Status:</b>
             <select id="status-${r.id}" ${disabled}>
               <option value="Yes" ${r.packet_received==="Yes"?"selected":""}>Yes</option>
               <option value="No" ${r.packet_received==="No"?"selected":""}>No</option>
             </select>
+            </p>
           </label>
           <br><br>
           <button class="updateBtn" data-id="${r.id}" ${disabled}>Submit</button>
