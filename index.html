@@ -28,7 +28,6 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     width: 500px;
 
-    /* Flexbox for alignment */
     display: flex; 
     flex-direction: column; 
     justify-content: flex-start; 
@@ -79,7 +78,6 @@
     width: 100%; 
     max-width: 420px;
 
-    /* Collapsible animation */
     max-height: 0; 
     overflow: hidden;
     opacity: 0;
@@ -87,7 +85,7 @@
   }
 
   .card.show {
-    max-height: 500px; /* allow expansion */
+    max-height: 500px; 
     opacity: 1;
   }
 
@@ -141,26 +139,34 @@
   </div>
 
   <script type="module">
-    // Redirect if not logged in
-    if (localStorage.getItem("isLoggedIn") !== "true") {
-      window.location.href = "login.html";
-    }
-
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-    const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co"
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amNkZW92ZGh0Z2JvZG54emJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NDI1ODMsImV4cCI6MjA3NDExODU4M30.H02FQCp7Otxrl79qK0qszhY_FpxTWsDCYqpfndI8_IM";
+    const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
+    const SUPABASE_KEY = "YOUR_SUPABASE_KEY"; // Replace securely
 
     const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Logout functionality
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("isLoggedIn");
-      window.location.href = "login.html";
-    });
+    document.addEventListener("DOMContentLoaded", () => {
+      // redirect if not logged in
+      if (localStorage.getItem("isLoggedIn") !== "true") {
+        window.location.href = "login.html";
+        return;
+      }
 
-    // Attach search button click handler
-    document.getElementById("searchBtn").addEventListener("click", search);
+      // logout button
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("isLoggedIn");
+        window.location.href = "login.html";
+      });
+
+      // search button
+      document.getElementById("searchBtn").addEventListener("click", search);
+
+      // enter key triggers search
+      document.getElementById("searchQuery").addEventListener("keypress", e => {
+        if (e.key === "Enter") search();
+      });
+    });
 
     async function search() {
       const query = document.getElementById("searchQuery").value.trim();
@@ -178,12 +184,8 @@
     function renderResults(results) {
       const div = document.getElementById("results");
       div.innerHTML = "";
-
       if (!results || results.length === 0) {
-        div.innerHTML = `
-          <div class="card show">
-            <p style="color:#b22222; font-weight:bold;">❌ No matching entry found.</p>
-          </div>`;
+        div.innerHTML = "<p style='color:#b22222;'>❌ No matching entry found.</p>";
         return;
       }
 
@@ -194,20 +196,43 @@
           warningMessage = "<p class='warning'>⚠️ Packet is already received</p>";
           disabled = "disabled";
         }
+        const card = document.createElement("div");
+        card.className = "card show";
+        card.innerHTML = `
+          <p><b>Flat:</b> ${r.flat_number}</p>
+          <p><b>Token:</b> ${r.token}</p>
+          <p><b>Family Count:</b> ${r.family_count}</p>
+          <p><b>Email:</b> ${r.email}</p>
+          <p><b>Packet Received:</b> ${r.packet_received}</p>
+          ${warningMessage}
+          <label>
+            <select id="status-${r.id}" ${disabled}>
+              <option value="Yes" ${r.packet_received==="Yes"?"selected":""}>Yes</option>
+              <option value="No" ${r.packet_received==="No"?"selected":""}>No</option>
+            </select>
+          </label>
+          <br><br>
+          <button class="updateBtn" data-id="${r.id}" ${disabled}>Submit</button>
+        `;
+        div.appendChild(card);
+      });
 
-        const html = `
-          <div class="card show">
-            <p><b>Flat:</b> ${r.flat_number}</p>
-            <p><b>Token:</b> ${r.token}</p>
-            <p><b>Family Count:</b> ${r.family_count}</p>
-            <p><b>Email:</b> ${r.email}</p>
-            <p><b>Packet Received:</b> ${r.packet_received}</p>
-            ${warningMessage}
-            <label>
-              <select id="status-${r.id}" ${disabled}>
-                <option value="Yes" ${r.packet_received==="Yes"?"selected":""}>Yes</option>
-                <option value="No" ${r.packet_received==="No"?"selected":""}>No</option>
-              </select>
-            </label>
-            <br><br>
-            <button class="updateBtn" data-id="${r.id}" ${d
+      // re-bind update buttons
+      document.querySelectorAll(".updateBtn").forEach(btn => {
+        btn.addEventListener("click", () => updateStatus(btn.dataset.id));
+      });
+    }
+
+    async function updateStatus(id) {
+      const status = document.getElementById("status-" + id).value;
+      const { error } = await client
+        .from("prasad")
+        .update({ packet_received: status })
+        .eq("id", id);
+
+      if (error) alert("Error: " + error.message);
+      else alert("Updated successfully!");
+    }
+  </script>
+</body>
+</html>
