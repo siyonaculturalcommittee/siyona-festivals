@@ -34,11 +34,14 @@
       text-align: center; 
       width: 300px;
 
-      /* Flexbox to vertically center inputs */
+      /* Flexbox for alignment */
       display: flex; 
       flex-direction: column; 
       justify-content: center; 
-      height: 320px; /* adjust as needed */
+      /* remove fixed height */
+      min-height: 320px;  /* keep minimum size */
+      height: auto;       /* grow if needed */
+      box-sizing: border-box;
     }
     h2 { color: #b22222; margin-bottom: 15px; }
     input { margin: 8px; padding: 10px; width: 80%; border: 2px solid #ff9933; border-radius: 8px; font-size: 14px; }
