@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Dusshera Prasad Distribution - Login</title>
+  <title>Dusshera Prasad Distribution Management Portal</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -88,13 +88,20 @@
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>🔐 Siyona Dusshera Prasad - Login</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p id="msg"></p>
-  </div>
+<div class="login-box">
+  <h2>🔐 Siyona Dusshera Prasad - Login</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <p id="msg"></p>
+
+  <!-- ✅ Added link to public lookup page -->
+  <p style="margin-top:15px;">
+    <a href="public.html" style="color:#ff9933; text-decoration:none; font-weight:bold;">
+      🔎 View Token Details (No Login Required)
+    </a>
+  </p>
+</div>
 
   <script>
     // hardcoded credentials (change these!)
