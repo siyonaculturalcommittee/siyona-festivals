@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dusshera Prasad - Token Lookup</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+
+    background-image: url('https://raw.githubusercontent.com/siyonaculturalcommittee/siyona-festivals/main/login-image.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .container {
+    text-align: center;
+    background: white; 
+    padding: 30px; 
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    width: 500px;
+
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+
+    min-height: 350px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  h2 { 
+    color: #b22222; 
+    margin-bottom: 15px; 
+  }
+
+  input { 
+    margin: 8px; 
+    padding: 10px; 
+    width: 80%; 
+    border: 2px solid #ff9933; 
+    border-radius: 8px; 
+    font-size: 14px; 
+  }
+
+  button { 
+    padding: 10px 18px; 
+    margin: 8px; 
+    background: #ff9933; 
+    border: none; 
+    color: white; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 15px; 
+  }
+  button:hover { background: #e68a00; }
+
+  .card {
+    border: 2px solid #ffcc66; 
+    background: #fffaf0; 
+    padding: 15px; 
+    margin-top: 20px; 
+    border-radius: 10px; 
+    text-align: left; 
+    width: 100%; 
+    max-width: 420px;
+  }
+
+  .card p { 
+    margin: 6px 0; 
+    font-size: 14px; 
+  }
+  .card p b { color: #b22222; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔎 Check Your Token Details</h2>
+    <p style="color:#d2691e;">Search by Flat Number or Token</p>
+    <input type="text" id="searchQuery" placeholder="Enter Flat Number or Token">
+    <br>
+    <button id="searchBtn">Search</button>
+    <div id="results"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL = "https://jzjcdeovdhtgbodnxzbu.supabase.co";
+    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY"; // use anon key safely
+    const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.getElementById("searchBtn").addEventListener("click", search);
+    document.getElementById("searchQuery").addEventListener("keypress", e => {
+      if (e.key === "Enter") search();
+    });
+
+    async function search() {
+      const query = document.getElementById("searchQuery").value.trim();
+      if (!query) { alert("Enter Flat Number or Token"); return; }
+
+      const { data, error } = await client
+        .from("prasad")
+        .select("*")
+        .or(`flat_number.eq.${query},token.eq.${query}`);
+
+      if (error) { alert("Error: " + error.message); return; }
+      renderResults(data);
+    }
+
+    function renderResults(results) {
+      const div = document.getElementById("results");
+      div.innerHTML = "";
+      if (!results || results.length === 0) {
+        div.innerHTML = "<p style='color:#b22222;'>❌ No matching entry found.</p>";
+        return;
+      }
+
+      results.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <p><b>Flat:</b> ${r.flat_number}</p>
+          <p><b>Token:</b> ${r.token}</p>
+          <p><b>Family Count:</b> ${r.family_count}</p>
+          <p><b>Email:</b> ${r.email}</p>
+          <p><b>Packet Received:</b> ${r.packet_received}</p>
+        `;
+        div.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
