@@ -84,7 +84,7 @@
   <div class="container">
     <h2>🔎 Check Your Token Details</h2>
     <p style="color:#d2691e;">Search by Flat Number or Token</p>
-    <input type="text" id="searchQuery" placeholder="Enter Flat Number">
+    <input type="text" id="flatInput" placeholder="Enter Flat Number">
     <input type="email" id="emailInput" placeholder="Enter Registered Email ID">
     <br>
     <button id="searchBtn">Search</button>
@@ -100,7 +100,7 @@
     const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     document.getElementById("searchBtn").addEventListener("click", search);
-    document.getElementById("searchQuery").addEventListener("keypress", e => {
+    document.addEventListener("keypress", e => {
       if (e.key === "Enter") search();
     });
 
