@@ -84,7 +84,7 @@
   <div class="container">
     <h2>🔎 Check Your Token Details</h2>
     <p style="color:#d2691e;">Search by Flat Number or Token</p>
-    <input type="text" id="searchQuery" placeholder="Enter Flat Number or Token">
+    <input type="text" id="searchQuery" placeholder="Enter Flat Number">
     <input type="email" id="emailInput" placeholder="Enter Registered Email ID">
     <br>
     <button id="searchBtn">Search</button>
@@ -104,18 +104,28 @@
       if (e.key === "Enter") search();
     });
 
-    async function search() {
-      const query = document.getElementById("searchQuery").value.trim();
-      if (!query) { alert("Enter Flat Number or Token"); return; }
+   async function search() {
+    const flat = document.getElementById("flatInput").value.trim();
+    const email = document.getElementById("emailInput").value.trim();
 
-      const { data, error } = await client
-        .from("prasad")
-        .select("*")
-        .or(`flat_number.eq.${query},token.eq.${query}`);
-
-      if (error) { alert("Error: " + error.message); return; }
-      renderResults(data);
+    if (!flat || !email) {
+      alert("⚠️ Please enter both Flat Number and Email ID");
+      return;
     }
+
+    // ✅ Query both conditions together
+    const { data, error } = await client
+      .from("prasad")
+      .select("*")
+      .eq("flat_number", flat)
+      .eq("email", email);
+
+    if (error) {
+      alert("Error: " + error.message);
+      return;
+    }
+    renderResults(data);
+  }
 
     function renderResults(results) {
       const div = document.getElementById("results");
